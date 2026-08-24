@@ -41,14 +41,22 @@ docker compose up -d --build
 ```
 
 This builds a small Alpine-based image, runs it as a non-root user, and
-persists the database in a Docker volume so it survives restarts. The app
-will be available at http://localhost:8080.
+persists the database in a Docker volume so it survives restarts. By default
+it publishes on host port `8091` (the container itself always listens on
+`8080` internally). To use a different host port, set `HOST_PORT`:
+
+```sh
+HOST_PORT=9091 docker compose up -d --build
+```
+
+In Portainer, set `HOST_PORT` as a stack environment variable instead of
+editing the compose file.
 
 Without compose:
 
 ```sh
 docker build -t ginlog .
-docker run -d -p 8080:8080 -v ginlog-data:/data ginlog
+docker run -d -p 8091:8080 -v ginlog-data:/data ginlog
 ```
 
 ## Deploying elsewhere
