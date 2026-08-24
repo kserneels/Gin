@@ -1,0 +1,26 @@
+{{define "head"}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/static/style.css">
+{{end}}
+
+{{define "nav"}}
+<header class="nav">
+  <a href="/" class="brand">🍸 GinLog</a>
+  <a href="/new" class="btn btn-primary">+ Add mix</a>
+</header>
+{{end}}
+
+{{define "stars-input"}}
+<div class="stars-input">
+  <select name="rating" id="rating">
+    <option value="0" {{if eq .Rating 0}}selected{{end}}>No rating</option>
+    <option value="1" {{if eq .Rating 1}}selected{{end}}>★☆☆☆☆</option>
+    <option value="2" {{if eq .Rating 2}}selected{{end}}>★★☆☆☆</option>
+    <option value="3" {{if eq .Rating 3}}selected{{end}}>★★★☆☆</option>
+    <option value="4" {{if eq .Rating 4}}selected{{end}}>★★★★☆</option>
+    <option value="5" {{if eq .Rating 5}}selected{{end}}>★★★★★</option>
+  </select>
+</div>
+{{end}}

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{template "head" .}}
+<title>{{.Title}} — GinLog</title>
+</head>
+<body>
+{{template "nav" .}}
+<main>
+  <a class="back" href="/">&larr; back</a>
+  <h1>{{.Title}}</h1>
+  <form class="recipe-form" action="{{.Action}}" method="post">
+    <label>
+      Name
+      <input type="text" name="name" required value="{{.Recipe.Name}}" placeholder="e.g. Poolside Sunset">
+    </label>
+
+    <div class="row">
+      <label>
+        Gin
+        <input type="text" name="gin" required value="{{.Recipe.Gin}}" placeholder="e.g. Hendrick's">
+      </label>
+      <label>
+        Tonic
+        <input type="text" name="tonic" value="{{.Recipe.Tonic}}" placeholder="e.g. Fever-Tree Elderflower">
+      </label>
+    </div>
+
+    <div class="row">
+      <label>
+        Garnish / fruit
+        <input type="text" name="garnish" value="{{.Recipe.Garnish}}" placeholder="e.g. cucumber, rosemary">
+      </label>
+      <label>
+        Ratio
+        <input type="text" name="ratio" value="{{.Recipe.Ratio}}" placeholder="e.g. 1:2">
+      </label>
+    </div>
+
+    <div class="row">
+      <label>
+        Glassware
+        <input type="text" name="glassware" value="{{.Recipe.Glassware}}" placeholder="e.g. copa glass">
+      </label>
+      <label>
+        Where you had it
+        <input type="text" name="location" value="{{.Recipe.Location}}" placeholder="e.g. The Botanist">
+      </label>
+    </div>
+
+    <label>
+      Rating
+      {{template "stars-input" .Recipe}}
+    </label>
+
+    <label>
+      Notes
+      <textarea name="notes" rows="4" placeholder="Anything else worth remembering…">{{.Recipe.Notes}}</textarea>
+    </label>
+
+    <button type="submit" class="btn btn-primary">Save mix</button>
+  </form>
+</main>
+</body>
+</html>

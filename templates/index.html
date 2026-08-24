@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{template "head" .}}
+<title>GinLog — your gin &amp; tonic mixes</title>
+</head>
+<body>
+{{template "nav" .}}
+<main>
+  <form class="search" action="/" method="get">
+    <input type="search" name="q" placeholder="Search by gin, tonic, garnish, place…" value="{{.Query}}">
+    <button type="submit">Search</button>
+  </form>
+
+  {{if not .Recipes}}
+  <div class="empty">
+    {{if .Query}}
+      <p>No mixes match "{{.Query}}".</p>
+    {{else}}
+      <p>No mixes saved yet.</p>
+    {{end}}
+    <a class="btn btn-primary" href="/new">Add your first gin mix</a>
+  </div>
+  {{else}}
+  <div class="grid">
+    {{range .Recipes}}
+    <a class="card" href="/recipes/{{.ID}}">
+      <div class="card-title">{{.Name}}</div>
+      <div class="card-rating">{{.Stars}}</div>
+      <dl>
+        <dt>Gin</dt><dd>{{.Gin}}</dd>
+        {{if .Tonic}}<dt>Tonic</dt><dd>{{.Tonic}}</dd>{{end}}
+        {{if .Garnish}}<dt>Garnish</dt><dd>{{.Garnish}}</dd>{{end}}
+      </dl>
+      {{if .Location}}<div class="card-location">📍 {{.Location}}</div>{{end}}
+    </a>
+    {{end}}
+  </div>
+  {{end}}
+</main>
+</body>
+</html>
