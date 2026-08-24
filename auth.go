@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"crypto/subtle"
 	"database/sql"
 	"encoding/base64"
 	"net/http"
@@ -21,7 +22,8 @@ const (
 type Auth struct {
 	db           *sql.DB
 	username     string
-	passwordHash []byte
+	password     string // plain-text password, used if passwordHash is empty
+	passwordHash []byte // bcrypt hash, preferred over password when both are set
 	cookieSecure bool
 
 	mu       sync.Mutex
@@ -34,10 +36,11 @@ type attemptState struct {
 	blockedUntil time.Time
 }
 
-func NewAuth(db *sql.DB, username, passwordHash string, cookieSecure bool) *Auth {
+func NewAuth(db *sql.DB, username, password, passwordHash string, cookieSecure bool) *Auth {
 	return &Auth{
 		db:           db,
 		username:     username,
+		password:     password,
 		passwordHash: []byte(passwordHash),
 		cookieSecure: cookieSecure,
 		attempts:     map[string]*attemptState{},
@@ -52,7 +55,10 @@ func (a *Auth) checkCredentials(username, password string) bool {
 	if username != a.username {
 		return false
 	}
-	return bcrypt.CompareHashAndPassword(a.passwordHash, []byte(password)) == nil
+	if len(a.passwordHash) > 0 {
+		return bcrypt.CompareHashAndPassword(a.passwordHash, []byte(password)) == nil
+	}
+	return subtle.ConstantTimeCompare([]byte(password), []byte(a.password)) == 1
 }
 
 // tooManyAttempts and recordFailure implement a simple per-key (usually

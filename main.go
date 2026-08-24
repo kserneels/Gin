@@ -25,12 +25,13 @@ func main() {
 	defer db.Close()
 
 	authUsername := os.Getenv("AUTH_USERNAME")
+	authPassword := os.Getenv("AUTH_PASSWORD")
 	authPasswordHash := os.Getenv("AUTH_PASSWORD_HASH")
-	if authUsername != "" && authPasswordHash == "" {
-		log.Fatal("AUTH_USERNAME is set but AUTH_PASSWORD_HASH is empty")
+	if authUsername != "" && authPassword == "" && authPasswordHash == "" {
+		log.Fatal("AUTH_USERNAME is set but neither AUTH_PASSWORD nor AUTH_PASSWORD_HASH is set")
 	}
 	cookieSecure := os.Getenv("INSECURE_COOKIE") == ""
-	auth := NewAuth(db, authUsername, authPasswordHash, cookieSecure)
+	auth := NewAuth(db, authUsername, authPassword, authPasswordHash, cookieSecure)
 	if !auth.enabled() {
 		log.Println("WARNING: AUTH_USERNAME/AUTH_PASSWORD_HASH not set — running without authentication")
 	}

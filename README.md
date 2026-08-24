@@ -36,14 +36,21 @@ Configuration is via environment variables:
 | `ADDR`               | `:8080`     | Address/port to listen on                                             |
 | `DB_PATH`            | `ginlog.db` | Path to the SQLite database file                                      |
 | `AUTH_USERNAME`      | (unset)     | Login username. If unset, the app runs with no login page at all.     |
-| `AUTH_PASSWORD_HASH` | (unset)     | Bcrypt hash of the login password. Required if `AUTH_USERNAME` is set. |
+| `AUTH_PASSWORD`      | (unset)     | Login password, in plain text. Simplest option — see below.           |
+| `AUTH_PASSWORD_HASH` | (unset)     | Bcrypt hash of the login password. Takes priority over `AUTH_PASSWORD` if both are set. |
 | `INSECURE_COOKIE`    | (unset)     | Set to any value to allow the session cookie over plain HTTP (only needed for local testing without TLS). |
 
 ## Enabling login
 
-Auth is off by default. To turn it on, set `AUTH_USERNAME` and
-`AUTH_PASSWORD_HASH`. Generate the hash with the binary itself — no extra
-tools needed:
+Auth is off by default. To turn it on, set `AUTH_USERNAME` and one of the
+two password options:
+
+**Plain password (simplest):** set `AUTH_PASSWORD` to whatever you want.
+In Portainer, add `AUTH_USERNAME` and `AUTH_PASSWORD` as stack environment
+variables, same as you did for `HOST_PORT`.
+
+**Bcrypt hash (avoids storing the password in plain text):** generate one
+with the binary itself, no extra tools needed:
 
 ```sh
 go run . hash 'your-password-here'
@@ -51,11 +58,12 @@ go run . hash 'your-password-here'
 docker run --rm ginlog hash 'your-password-here'
 ```
 
-That prints a bcrypt hash. Set `AUTH_USERNAME` to whatever username you
-want, and `AUTH_PASSWORD_HASH` to the printed hash (quote it — it contains
-`$` characters). In Portainer, add both as stack environment variables,
-same as `HOST_PORT`. Once set, every page requires logging in, with a
-30-day session cookie so you're not asked repeatedly on your phone.
+Set `AUTH_PASSWORD_HASH` to the printed value instead (quote it — it
+contains `$` characters).
+
+Either way, once `AUTH_USERNAME` and a password are set, every page
+requires logging in, with a 30-day session cookie so you're not asked
+repeatedly on your phone.
 
 ## Running with Docker
 
