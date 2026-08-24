@@ -14,7 +14,14 @@
       <span class="brand-tagline">a journal of gin &amp; tonic</span>
     </span>
   </a>
-  <a href="/new" class="btn btn-primary">+ Add mix</a>
+  <div class="nav-actions">
+    <a href="/new" class="btn btn-primary">+ Add mix</a>
+    {{if .AuthEnabled}}
+    <form action="/logout" method="post" class="logout-form">
+      <button type="submit" class="btn btn-ghost">Log out</button>
+    </form>
+    {{end}}
+  </div>
 </header>
 {{end}}
 

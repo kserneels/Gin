@@ -18,20 +18,24 @@ var tmpl = template.Must(template.ParseFS(templateFS, "templates/*.html"))
 
 type Server struct {
 	store *Store
+	auth  *Auth
 }
 
 func (s *Server) routes() http.Handler {
 	mux := http.NewServeMux()
 
 	mux.Handle("GET /static/", http.FileServerFS(staticFS))
+	mux.HandleFunc("GET /login", s.handleLoginForm)
+	mux.HandleFunc("POST /login", s.handleLogin)
+	mux.HandleFunc("POST /logout", s.handleLogout)
 
-	mux.HandleFunc("GET /{$}", s.handleIndex)
-	mux.HandleFunc("GET /new", s.handleNewForm)
-	mux.HandleFunc("POST /recipes", s.handleCreate)
-	mux.HandleFunc("GET /recipes/{id}", s.handleShow)
-	mux.HandleFunc("GET /recipes/{id}/edit", s.handleEditForm)
-	mux.HandleFunc("POST /recipes/{id}", s.handleUpdate)
-	mux.HandleFunc("POST /recipes/{id}/delete", s.handleDelete)
+	mux.HandleFunc("GET /{$}", s.requireAuth(s.handleIndex))
+	mux.HandleFunc("GET /new", s.requireAuth(s.handleNewForm))
+	mux.HandleFunc("POST /recipes", s.requireAuth(s.handleCreate))
+	mux.HandleFunc("GET /recipes/{id}", s.requireAuth(s.handleShow))
+	mux.HandleFunc("GET /recipes/{id}/edit", s.requireAuth(s.handleEditForm))
+	mux.HandleFunc("POST /recipes/{id}", s.requireAuth(s.handleUpdate))
+	mux.HandleFunc("POST /recipes/{id}/delete", s.requireAuth(s.handleDelete))
 
 	return mux
 }
@@ -45,16 +49,18 @@ func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, "index.html", map[string]any{
-		"Recipes": recipes,
-		"Query":   q,
+		"Recipes":     recipes,
+		"Query":       q,
+		"AuthEnabled": s.auth.enabled(),
 	})
 }
 
 func (s *Server) handleNewForm(w http.ResponseWriter, r *http.Request) {
 	render(w, "form.html", map[string]any{
-		"Recipe": Recipe{},
-		"Action": "/recipes",
-		"Title":  "Add a Gin Mix",
+		"Recipe":      Recipe{},
+		"Action":      "/recipes",
+		"Title":       "Add a Gin Mix",
+		"AuthEnabled": s.auth.enabled(),
 	})
 }
 
@@ -84,7 +90,7 @@ func (s *Server) handleShow(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	render(w, "detail.html", map[string]any{"Recipe": rec})
+	render(w, "detail.html", map[string]any{"Recipe": rec, "AuthEnabled": s.auth.enabled()})
 }
 
 func (s *Server) handleEditForm(w http.ResponseWriter, r *http.Request) {
@@ -99,9 +105,10 @@ func (s *Server) handleEditForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, "form.html", map[string]any{
-		"Recipe": rec,
-		"Action": "/recipes/" + strconv.FormatInt(id, 10),
-		"Title":  "Edit " + rec.Name,
+		"Recipe":      rec,
+		"Action":      "/recipes/" + strconv.FormatInt(id, 10),
+		"Title":       "Edit " + rec.Name,
+		"AuthEnabled": s.auth.enabled(),
 	})
 }
 

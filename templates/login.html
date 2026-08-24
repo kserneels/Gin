@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{template "head" .}}
+<title>Log in — GinLog</title>
+</head>
+<body>
+<main class="login-main">
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="brand-mark">🍸</span>
+      <span class="brand-name">GinLog</span>
+    </div>
+    {{if .Error}}<div class="login-error">{{.Error}}</div>{{end}}
+    <form method="post" action="/login">
+      <input type="hidden" name="next" value="{{.Next}}">
+      <label>
+        Username
+        <input type="text" name="username" required autofocus autocomplete="username">
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" required autocomplete="current-password">
+      </label>
+      <button type="submit" class="btn btn-primary login-submit">Log in</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>

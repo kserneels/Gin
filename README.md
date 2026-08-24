@@ -15,6 +15,8 @@ step, no external services — just one process and one file on disk.
 - Browse everything you've saved, newest first.
 - Search across gin, tonic, garnish and location.
 - Edit or delete any entry.
+- Optional login (session cookie + bcrypt-hashed password) to protect the
+  app when it's exposed to the internet.
 
 ## Running locally
 
@@ -29,10 +31,31 @@ The app listens on `:8080` by default and stores data in `./ginlog.db`
 
 Configuration is via environment variables:
 
-| Variable  | Default        | Description                     |
-|-----------|----------------|----------------------------------|
-| `ADDR`    | `:8080`        | Address/port to listen on        |
-| `DB_PATH` | `ginlog.db`    | Path to the SQLite database file |
+| Variable             | Default     | Description                                                          |
+|----------------------|-------------|------------------------------------------------------------------------|
+| `ADDR`               | `:8080`     | Address/port to listen on                                             |
+| `DB_PATH`            | `ginlog.db` | Path to the SQLite database file                                      |
+| `AUTH_USERNAME`      | (unset)     | Login username. If unset, the app runs with no login page at all.     |
+| `AUTH_PASSWORD_HASH` | (unset)     | Bcrypt hash of the login password. Required if `AUTH_USERNAME` is set. |
+| `INSECURE_COOKIE`    | (unset)     | Set to any value to allow the session cookie over plain HTTP (only needed for local testing without TLS). |
+
+## Enabling login
+
+Auth is off by default. To turn it on, set `AUTH_USERNAME` and
+`AUTH_PASSWORD_HASH`. Generate the hash with the binary itself — no extra
+tools needed:
+
+```sh
+go run . hash 'your-password-here'
+# or, with the Docker image:
+docker run --rm ginlog hash 'your-password-here'
+```
+
+That prints a bcrypt hash. Set `AUTH_USERNAME` to whatever username you
+want, and `AUTH_PASSWORD_HASH` to the printed hash (quote it — it contains
+`$` characters). In Portainer, add both as stack environment variables,
+same as `HOST_PORT`. Once set, every page requires logging in, with a
+30-day session cookie so you're not asked repeatedly on your phone.
 
 ## Running with Docker
 

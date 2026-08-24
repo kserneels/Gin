@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS recipes (
 	notes      TEXT,
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS sessions (
+	token      TEXT PRIMARY KEY,
+	expires_at DATETIME NOT NULL
+);
 `
 
 func openDB(path string) (*sql.DB, error) {
