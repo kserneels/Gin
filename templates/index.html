@@ -14,10 +14,11 @@
 
   {{if not .Recipes}}
   <div class="empty">
+    <div class="empty-glass">🍸</div>
     {{if .Query}}
-      <p>No mixes match "{{.Query}}".</p>
+      <p>No mixes match &ldquo;{{.Query}}&rdquo;.</p>
     {{else}}
-      <p>No mixes saved yet.</p>
+      <p>No mixes saved yet. Had a good one lately?</p>
     {{end}}
     <a class="btn btn-primary" href="/new">Add your first gin mix</a>
   </div>
@@ -25,13 +26,15 @@
   <div class="grid">
     {{range .Recipes}}
     <a class="card" href="/recipes/{{.ID}}">
-      <div class="card-title">{{.Name}}</div>
-      <div class="card-rating">{{.Stars}}</div>
-      <dl>
-        <dt>Gin</dt><dd>{{.Gin}}</dd>
-        {{if .Tonic}}<dt>Tonic</dt><dd>{{.Tonic}}</dd>{{end}}
-        {{if .Garnish}}<dt>Garnish</dt><dd>{{.Garnish}}</dd>{{end}}
-      </dl>
+      <div class="card-top">
+        <h3 class="card-title">{{.Name}}</h3>
+        <div class="card-rating" title="{{.Rating}}/5">{{.Stars}}</div>
+      </div>
+      <div class="tags">
+        <span class="tag tag-gin">{{.Gin}}</span>
+        {{if .Tonic}}<span class="tag">{{.Tonic}}</span>{{end}}
+        {{if .Garnish}}<span class="tag tag-muted">{{.Garnish}}</span>{{end}}
+      </div>
       {{if .Location}}<div class="card-location">📍 {{.Location}}</div>{{end}}
     </a>
     {{end}}
